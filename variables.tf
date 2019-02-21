@@ -1,47 +1,52 @@
 variable "region" {
-  default = "eu-west-1"
+  description = "AWS region"
+  default     = "eu-west-1"
 }
 
 variable "availability_zones" {
-  default = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  description = "AWS availability zones"
+  default     = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
 }
 
 variable "environment" {
-  default = "dev"
+  description = "Environment to tag the created resources"
+  default     = "dev"
 }
 
 variable "eks_ami_id" {
-  default = "ami-01e08d22b9439c15a" //amazon-eks-node-1.11-v20190109
+  description = "AMI used for the worker nodes. Default amazon-eks-node-1.11-v20190109"
+  default     = "ami-01e08d22b9439c15a"
 }
 
 variable "instance_type" {
-  default = "t2.large"
+  description = "Instance type used for the worker nodes"
+  default     = "t2.large"
 }
 
 variable "asg_min_size" {
-  default = "5"
+  description = "Min nodes the cluster will have"
+  default     = "5"
 }
 
 variable "asg_max_size" {
-  default = "24"
+  description = "Max nodes the cluster will autoscale to"
+  default     = "24"
 }
 
-// Name of the EKS Cluster
 variable "cluster_name" {
-  default = "blueharvest"
+  description = "Name of the EKS Cluster"
+  default     = "blueharvest"
 }
 
-// Root domain name of the hosted zone on AWS
 variable "cluster_zone" {
-  default = "blueharvest.io"
+  description = "Root domain name of the hosted zone on AWS"
+  default     = "blueharvest.io"
 }
 
-// ID of the hosted zone on AWS
 variable "cluster_zone_id" {
-  default = "Z31OVNF5EA1VAW"
+  description = "ID of the hosted zone on AWS"
+  default     = "Z31OVNF5EA1VAW"
 }
-
-// AWS Users to map to the EKS aws-auth configmap
 
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap."
@@ -59,7 +64,7 @@ variable "map_users_count" {
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type        = "list"
-  default = []
+  default     = []
 }
 
 variable "map_roles_count" {
@@ -68,8 +73,10 @@ variable "map_roles_count" {
   default     = 0
 }
 
+variable "cluster_private_key" {
+  description = "B64 encoded private key use to generate the aws-key-pair"
+}
 
-// B64 encoded keys to be used
-variable "cluster_private_key" {}
-
-variable "cluster_public_key" {}
+variable "cluster_public_key" {
+  description = "B64 encoded public key use to generate the aws-key-pair"
+}
