@@ -164,5 +164,4 @@ MIT Licensed. See [LICENSE](https://github.com/blue-harvest/terraform-aws-blueha
 ## Outputs
 | Name | Description |
 |------|-------------|
-
 | kubectl\_config | Kubectl configuration file. |
