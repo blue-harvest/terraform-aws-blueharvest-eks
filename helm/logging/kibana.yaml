@@ -1,0 +1,67 @@
+image:
+  repository: "docker.elastic.co/kibana/kibana-oss"
+  tag: "6.2.4"
+
+files:
+  kibana.yml:
+    ## Default Kibana configuration from kibana-docker.
+    server.name: kibana
+    server.host: "0"
+    elasticsearch.url: http://elasticsearch-logging-coordinator:9200
+
+    ## Custom config properties below
+    ## Ref: https://www.elastic.co/guide/en/kibana/current/settings.html
+    # server.port: 5601
+    # logging.verbose: "true"
+    # server.defaultRoute: "/app/kibana"
+
+service:
+  type: ClusterIP
+  externalPort: 5601
+  internalPort: 5601
+  labels:
+    k8s-app: kibana-logging
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    kubernetes.io/name: "Kibana"
+
+ingress:
+  enabled: true
+  hosts:
+    - kibana.eks.CLUSTER_DNS
+  annotations:
+    kubernetes.io/ingress.class: "nginx-internal"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/tls-acme: "true"
+    certmanager.k8s.io/acme-challenge-type: "dns01"
+    certmanager.k8s.io/acme-dns01-provider: "route53"
+    external-dns.alpha.kubernetes.io/hostname: "kibana.eks.CLUSTER_DNS"
+    external-dns.alpha.kubernetes.io/target: "internal.nginx.eks.CLUSTER_DNS"
+  tls:
+     - secretName: kibana-crt
+       hosts:
+         - kibana.eks.CLUSTER_DNS
+
+resources:
+   limits:
+     cpu: 100m
+     memory: 300Mi
+   requests:
+     cpu: 100m
+     memory: 300Mi
+
+replicaCount: 1
+revisionHistoryLimit: 3
+
+# to export a dashboard from a running kibana 6.3.x use:
+# curl --user <username>:<password> -XGET https://kibana.yourdomain.com:5601/api/kibana/dashboards/export?dashboard=<some-dashboard-uuid> > my-dashboard.json
+# you can find an example dashboard for kubernests with fluentd-elasticsearch chart here: https://github.com/monotek/kibana-dashboards/blob/master/k8s-fluentd-elasticsearch.json
+dashboardImport:
+  xpackauth:
+    enabled: false
+    username: myuser
+    password: mypass
+  dashboards: {}

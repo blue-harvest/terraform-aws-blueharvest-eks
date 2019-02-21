@@ -1,0 +1,22 @@
+image:
+  name: registry.opensource.zalan.do/teapot/external-dns
+  tag: v0.5.7
+
+sources:
+  - istio-gateway
+
+provider: aws
+
+domainFilters:
+ - CLUSTER_ZONE
+
+registry: "txt"
+txtPrefix: "txt."
+txtOwnerId: CLUSTER_NAME.istio-external-dns
+
+## options: sync, upsert-only
+policy: sync
+logLevel: info
+
+rbac:
+ serviceAccountName: external-dns

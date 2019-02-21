@@ -1,0 +1,18 @@
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+apiService:
+  create: true
+
+image:
+  repository: k8s.gcr.io/metrics-server-amd64
+  tag: v0.3.1
+  pullPolicy: IfNotPresent
+
+args:
+  - --logtostderr
+  - --kubelet-insecure-tls
+  - --kubelet-preferred-address-types=InternalIP

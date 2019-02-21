@@ -1,0 +1,13 @@
+bin/*
+*.tfstate
+*.tfstate.backup
+.DS_Store 
+crash.log
+.idea
+*.iml
+*.exe
+*.ovpn
+debug.test
+.terraform/*
+linux-amd64/*
+temp/*

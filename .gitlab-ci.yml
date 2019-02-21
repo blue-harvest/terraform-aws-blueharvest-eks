@@ -1,0 +1,39 @@
+image:
+  name: hashicorp/terraform:0.11.11
+  entrypoint:  ["/bin/sh", "-c"]
+
+
+stages:
+  - build
+  - deploy
+
+plan:
+  stage: build
+  tags:
+   - blueharvest
+   - terraform
+  before_script:
+   - export TF_VAR_cluster_private_key=$CLUSTER_PRIVATE_KEY
+   - export TF_VAR_cluster_public_key=$CLUSTER_PUBLIC_KEY
+   - terraform --version
+   - terraform init -force-copy=true
+  script:
+   - terraform validate
+
+publish:
+  image: giannisp/node-docker-awscli:1.2.1
+  stage: deploy
+  when: on_success
+  dependencies:
+   - plan
+  tags:
+   - blueharvest
+   - terraform
+  before_script:
+   - apt-get update
+   - apt-get install -y zip unzip
+
+  script:
+   - zip -r terraform-aws-blueharvest-eks.zip ./ -x .git/**\*
+   - ls -la
+   - aws s3 cp terraform-aws-blueharvest-eks.zip s3://blueharvest-terraform-registry/terraform-aws-blueharvest-eks.zip --acl authenticated-read

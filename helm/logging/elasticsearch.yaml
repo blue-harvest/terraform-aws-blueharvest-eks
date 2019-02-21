@@ -1,0 +1,88 @@
+fullnameOverride: elasticsearch-logging
+appVersion: "6.6.0"
+
+image:
+  repository: "docker.elastic.co/elasticsearch/elasticsearch-oss"
+  tag: "6.6.0"
+  pullPolicy: "IfNotPresent"
+
+cluster:
+  name: "elasticsearch-logging"
+  config:
+  env:
+    # IMPORTANT: https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html#minimum_master_nodes
+    MINIMUM_MASTER_NODES: "2"
+    NODE_NAME: "${NODE_NAME}"
+    NETWORK_HOST: "${NODE_IP}"
+
+client:
+  name: coordinator
+  replicas: 2
+  serviceType: ClusterIP
+  heapSize: "512m"
+  antiAffinity: "soft"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1024Mi"
+    requests:
+      cpu: "25m"
+      memory: "512Mi"
+
+master:
+  name: master
+  exposeHttp: false
+  replicas: 3
+  heapSize: "512m"
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    # There is a bug, the name has to be data as well
+    name: data
+    size: "4Gi"
+    # storageClass: "ssd"
+  antiAffinity: "soft"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1024Mi"
+    requests:
+      cpu: "25m"
+      memory: "512Mi"
+
+data:
+  name: data
+  exposeHttp: false
+  replicas: 5
+  heapSize: "1536m"
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    name: data
+    size: "20Gi"
+    # storageClass: "ssd"
+  terminationGracePeriodSeconds: 3600
+  antiAffinity: "soft"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "2048Mi"
+    requests:
+      cpu: "25m"
+      memory: "1536Mi"
+  podDisruptionBudget:
+    enabled: false
+    # minAvailable: 1
+    maxUnavailable: 1
+
+## Sysctl init container to setup vm.max_map_count
+# see https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+# and https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html#mlockall
+sysctlInitContainer:
+  enabled: true
+## Additional init containers
+# extraInitContainers: |
+#   - name: "init-sysctl-file-max"
+#     image: "busybox:latest"
+#     command: ["sysctl"]
+#     args: ["-w", "fs.file-max=100000"]

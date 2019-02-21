@@ -1,0 +1,25 @@
+ingress:
+  enabled: true
+
+  annotations:
+    kubernetes.io/ingress.class: "nginx-internal"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    kubernetes.io/tls-acme: "true"
+    certmanager.k8s.io/acme-challenge-type: "dns01"
+    certmanager.k8s.io/acme-dns01-provider: "route53"
+    external-dns.alpha.kubernetes.io/hostname: dashboard.eks.CLUSTER_DNS
+    external-dns.alpha.kubernetes.io/target: internal.nginx.eks.CLUSTER_DNS
+
+  path: /
+
+  hosts:
+    - dashboard.eks.CLUSTER_DNS
+
+  tls:
+    - secretName: kubernetes-dashboard-crt
+      hosts:
+        - dashboard.eks.CLUSTER_DNS

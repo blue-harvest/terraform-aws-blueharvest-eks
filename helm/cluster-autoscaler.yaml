@@ -1,0 +1,11 @@
+cloudProvider: aws
+awsRegion: eu-west-1
+
+rbac:
+  create: true
+
+sslCertPath: /etc/ssl/certs/ca-bundle.crt
+
+autoDiscovery:
+  clusterName: YOUR_CLUSTER_NAME
+  enabled: true

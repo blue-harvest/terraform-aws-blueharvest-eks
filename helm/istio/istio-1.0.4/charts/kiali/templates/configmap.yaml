@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: kiali
+data:
+  config.yaml: |
+    server:
+      port: 20001
+    external_services:
+      prometheus_service_url: {{ .Values.prometheusAddr }}
+      jaeger:
+        url: {{ .Values.dashboard.jaegerURL }}
+      grafana:
+        url: {{ .Values.dashboard.grafanaURL }}

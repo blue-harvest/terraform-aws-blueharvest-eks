@@ -1,0 +1,127 @@
+controller:
+  image:
+    repository: "quay.io/kubernetes-ingress-controller/nginx-ingress-controller"
+    tag: "0.15.0"
+    pullPolicy: IfNotPresent
+
+  headers: {}
+
+  config:
+    use-proxy-protocol: "true"
+
+  ingressClass: nginx
+
+  publishService:
+    enabled: true
+
+  ## DaemonSet or Deployment
+  kind: Deployment
+  replicaCount: 4
+  minAvailable: 4
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 4
+    maxReplicas: 40
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
+      service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+      external-dns.alpha.kubernetes.io/hostname: nginx.eks.CLUSTER_DNS
+    labels:
+      app: nginx-ingress
+
+    enableHttp: true
+    enableHttps: true
+
+    externalTrafficPolicy: ""
+
+    healthCheckNodePort: 0
+
+    targetPorts:
+      http: http
+      https: https
+
+    type: LoadBalancer
+
+  stats:
+    enabled: true
+
+    service:
+      annotations: {}
+      clusterIP: ""
+
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 18080
+      type: ClusterIP
+
+  ## If controller.stats.enabled = true and controller.metrics.enabled = true, Prometheus metrics will be exported
+  metrics:
+    enabled: true
+
+    service:
+      annotations:
+       prometheus.io/scrape: "true"
+       prometheus.io/port: "10254"
+
+      clusterIP: ""
+
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 9913
+      type: ClusterIP
+
+  lifecycle: {}
+
+  priorityClassName: ""
+
+## Rollback limit
+##
+revisionHistoryLimit: 10
+
+## Default 404 backend
+##
+defaultBackend:
+  enabled: true
+
+  name: default-backend
+  image:
+    repository: k8s.gcr.io/defaultbackend
+    tag: "1.4"
+    pullPolicy: IfNotPresent
+
+  extraArgs: {}
+
+  port: 8080
+
+  replicaCount: 1
+  minAvailable: 1
+
+  resources:
+   limits:
+     cpu: 10m
+     memory: 20Mi
+   requests:
+     cpu: 10m
+     memory: 20Mi
+
+  service:
+    annotations:
+    clusterIP: ""
+
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+    servicePort: 80
+    type: ClusterIP
