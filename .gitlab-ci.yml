@@ -13,8 +13,8 @@ plan:
    - blueharvest
    - terraform
   before_script:
-   - export TF_VAR_cluster_private_key=$CLUSTER_PRIVATE_KEY
-   - export TF_VAR_cluster_public_key=$CLUSTER_PUBLIC_KEY
+   - export TF_VAR_cluster_zone=blueharvest.io
+   - export TF_VAR_cluster_zone_id=Z31OVNF5EA1VAW
    - terraform --version
    - terraform init -force-copy=true
   script:
@@ -24,6 +24,8 @@ publish:
   image: giannisp/node-docker-awscli:1.2.1
   stage: deploy
   when: on_success
+  only:
+    - master
   dependencies:
    - plan
   tags:
