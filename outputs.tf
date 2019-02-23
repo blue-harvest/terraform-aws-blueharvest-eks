@@ -15,11 +15,6 @@ output "kubectl_config" {
 }
 
 output "config_map_aws_auth" {
-  description = ""
+  description = "Config map contianing the mapping between AWS and K8S users."
   value       = "${module.eks.config_map_aws_auth}"
-}
-
-output "region" {
-  description = "AWS region."
-  value       = "${var.region}"
 }

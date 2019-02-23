@@ -63,7 +63,7 @@ resource "aws_instance" "blueharvest-terraform-eks-openvpn" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = "${base64decode(var.cluster_private_key)}"
+      private_key = "${tls_private_key.blueharvest-terraform-eks.private_key_pem}"
     }
   }
 
@@ -85,21 +85,11 @@ resource "aws_instance" "blueharvest-terraform-eks-openvpn" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = "${base64decode(var.cluster_private_key)}"
+      private_key = "${tls_private_key.blueharvest-terraform-eks.private_key_pem}"
     }
   }
 
   provisioner "local-exec" {
-    command = "echo \"${base64decode(var.cluster_private_key)}\" >> /var/tmp/cluster_key"
-    interpreter = ["/bin/sh", "-c"]
-  }
-
-  provisioner "local-exec" {
-    command = "chmod 600 /var/tmp/cluster_key"
-    interpreter = ["/bin/sh", "-c"]
-  }
-
-  provisioner "local-exec" {
-    command = "sftp -oStrictHostKeyChecking=no -i /var/tmp/cluster_key ubuntu@${aws_instance.blueharvest-terraform-eks-openvpn.public_ip}:client-configs/files/${var.cluster_name}.ovpn ./"
+    command = "sftp -oStrictHostKeyChecking=no -i ${var.cluster_name}_key ubuntu@${aws_instance.blueharvest-terraform-eks-openvpn.public_ip}:client-configs/files/${var.cluster_name}.ovpn ./"
   }
 }
