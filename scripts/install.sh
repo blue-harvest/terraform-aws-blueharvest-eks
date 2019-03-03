@@ -49,14 +49,21 @@ helm upgrade --install external-dns-nginx -f ./temp/helm/external-dns/external-d
 helm upgrade --install external-dns-istio -f ./temp/helm/external-dns/external-dns-istio.yaml stable/external-dns --namespace kube-system
 
 ############## Install cert-manager ##############
-sed -i -e "s/CLUSTER_ZONE_ID/${CLUSTER_ZONE_ID}/g" ./temp/helm/cert-manager/letsencrypt-staging.yaml
-sed -i -e "s/AWS_ACCESS_KEY_ID/${AWS_ACCESS_KEY_ID}/g" ./temp/helm/cert-manager/letsencrypt-staging.yaml
+LETSENCRYPT_ENV=staging
 
-sed -i -e "s/CLUSTER_ZONE_ID/${CLUSTER_ZONE_ID}/g" ./temp/helm/cert-manager/letsencrypt-prod.yaml
-sed -i -e "s/AWS_ACCESS_KEY_ID/${AWS_ACCESS_KEY_ID}/g" ./temp/helm/cert-manager/letsencrypt-prod.yaml
+if [ "$LETSENCRYPT_PRODUCTION" == "true" ]
+then
+  LETSENCRYPT_ENV=prod
+fi
+
+sed -i -e "s/CLUSTER_ZONE_ID/${CLUSTER_ZONE_ID}/g" ./temp/helm/cert-manager/letsencrypt-$LETSENCRYPT_ENV.yaml
+sed -i -e "s/AWS_ACCESS_KEY_ID/${AWS_ACCESS_KEY_ID}/g" ./temp/helm/cert-manager/letsencrypt-$LETSENCRYPT_ENV.yaml
+sed -i -e "s/LETSENCRYPT_EMAIL/${LETSENCRYPT_EMAIL}/g" ./temp/helm/cert-manager/letsencrypt-$LETSENCRYPT_ENV.yaml
+
+sed -i -e "s/LETSENCRYPT_ENV/${LETSENCRYPT_ENV}/g" ./temp/helm/cert-manager/cert-manager.yaml
 
 helm upgrade --install cert-manager -f ./temp/helm/cert-manager/cert-manager.yaml stable/cert-manager --namespace kube-system --version v0.5.1
-kubectl apply -f ./temp/helm/cert-manager/letsencrypt-staging.yaml
+kubectl apply -f ./temp/helm/cert-manager/letsencrypt-$LETSENCRYPT_ENV.yaml
 
 ############## Install kubernetes-dashboard ##############
 sed -i -e "s/CLUSTER_DNS/${CLUSTER_DNS}/g" ./temp/helm/kubernetes-dashboard.yaml

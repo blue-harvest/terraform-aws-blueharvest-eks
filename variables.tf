@@ -3,11 +3,6 @@ variable "availability_zones" {
   default     = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
 }
 
-variable "environment" {
-  description = "Environment to tag the created resources."
-  default     = "dev"
-}
-
 variable "eks_ami_id" {
   description = "AMI used for the worker nodes. Default amazon-eks-node-1.11-v20190109."
   default     = "ami-01e08d22b9439c15a"
@@ -39,6 +34,17 @@ variable "cluster_zone" {
 
 variable "cluster_zone_id" {
   description = "ID of the hosted zone on AWS."
+}
+
+variable "letsencrypt_email" {
+  description = "Email address used for ACME registration"
+  type        = "string"
+}
+
+variable "letsencrypt_production" {
+  description = "If the ACME production server will be used or not."
+  type        = "string"
+  default     = "false"
 }
 
 variable "map_users" {

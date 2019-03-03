@@ -1,5 +1,5 @@
 ingressShim:
-  defaultIssuerName: "letsencrypt-staging"
+  defaultIssuerName: "letsencrypt-LETSENCRYPT_ENV"
   defaultIssuerKind: "ClusterIssuer"
   defaultACMEChallengeType: "dns01"
   defaultACMEDNS01ChallengeProvider: "route53"

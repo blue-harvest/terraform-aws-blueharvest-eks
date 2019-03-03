@@ -14,7 +14,6 @@ module "vpc" {
 
   tags = {
     Name        = "${var.cluster_name}-vpc"
-    Environment = "${var.environment}"
   }
 
   private_subnet_tags = {
