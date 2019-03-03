@@ -2,7 +2,7 @@ module "eks" {
   source       = "terraform-aws-modules/eks/aws"
   cluster_name = "${var.cluster_name}"
   subnets      = ["${module.vpc.public_subnets}", "${module.vpc.private_subnets}"]
-  tags         = "${map(var.cluster_name, var.environment)}"
+  tags         = "${map("cluster", var.cluster_name)}"
   vpc_id       = "${module.vpc.vpc_id}"
 
   worker_groups = "${list(

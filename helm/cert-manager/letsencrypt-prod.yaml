@@ -7,7 +7,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: armando-ramirez.vila@capgemini.com
+    email: LETSENCRYPT_EMAIL
     privateKeySecretRef:
       name: letsencrypt-prod
     # Enable the DNS-01 challenge provider

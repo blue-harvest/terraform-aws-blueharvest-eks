@@ -40,7 +40,7 @@ resource "aws_security_group" "blueharvest-terraform-eks-openvpn" {
 }
 
 resource "aws_instance" "blueharvest-terraform-eks-openvpn" {
-  instance_type = "t2.medium"
+  instance_type = "t3.medium"
   ami           = "${data.aws_ami.ubuntu.id}"
 
   vpc_security_group_ids = [
@@ -53,7 +53,6 @@ resource "aws_instance" "blueharvest-terraform-eks-openvpn" {
 
   tags = {
     Name        = "${var.cluster_name}-openvpn"
-    Environment = "${var.environment}"
   }
 
   provisioner "file" {

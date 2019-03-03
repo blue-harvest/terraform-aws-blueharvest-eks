@@ -1,8 +1,8 @@
 resource "null_resource" "helm_charts" {
-  depends_on = ["module.eks", "module.vpc", "aws_instance.blueharvest-terraform-eks-openvpn", "aws_instance.blueharvest-terraform-eks-bastion"]
+  depends_on = ["module.eks", "module.vpc"]
 
   triggers {
-    build_number = "${timestamp()}"
+    cluster_endpoint = "${module.eks.cluster_endpoint}"
   }
 
   provisioner "local-exec" {
@@ -16,10 +16,13 @@ resource "null_resource" "helm_charts" {
     interpreter = ["/bin/sh", "-c"]
 
     environment {
-      CLUSTER_NAME    = "${var.cluster_name}"
-      CLUSTER_ZONE    = "${var.cluster_zone}"
-      CLUSTER_ZONE_ID = "${var.cluster_zone_id}"
-      KUBECONFIG      = "${path.root}/kubeconfig_${var.cluster_name}"
+      CLUSTER_NAME      = "${var.cluster_name}"
+      CLUSTER_ZONE      = "${var.cluster_zone}"
+      CLUSTER_ZONE_ID   = "${var.cluster_zone_id}"
+      LETSENCRYPT_EMAIL = "${var.letsencrypt_email}"
+      LETSENCRYPT_PRODUCTION = "${var.letsencrypt_production}"
+      KUBECONFIG        = "${path.root}/kubeconfig_${var.cluster_name}"
+
     }
   }
 
